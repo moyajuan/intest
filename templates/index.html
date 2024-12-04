@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Enlace a Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(
+                    rgba(0, 0, 0, 0.7),
+                    rgba(0, 0, 0, 0.7)
+                ),
+                url('https://images.unsplash.com/photo-1522881451255-f59ad836fdfb?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDR8fHRlY2hub2xvZ3l8ZW58MHx8fHwxNjk3MDAzMzcy&ixlib=rb-1.2.1&q=80&w=1080')
+                no-repeat center center;
+            background-size: cover;
+        }
+        .navbar {
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        .sidebar {
+            height: calc(100vh - 56px);
+            width: 250px;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin: 10px 0;
+        }
+        .sidebar ul li a {
+            text-decoration: none;
+            font-size: 1.2rem;
+            color: #007BFF;
+        }
+        .sidebar ul li a:hover {
+            color: #0056b3;
+        }
+        .main-content {
+            margin-left: 270px;
+            padding: 40px;
+            color: white;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra azul de Bootstrap con el nombre del usuario -->
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <span class="navbar-text mx-auto" style="font-size: 2rem; font-weight: bold;">
+                Bienvenido, {{ session['user'] }}
+            </span>
+        </div>
+    </nav>
+
+    <!-- Sidebar con enlaces y botón de cerrar sesión -->
+    <div class="sidebar">
+        <ul>
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('entradas') }}">Entradas</a></li>
+            <li><a href="{{ url_for('salidas') }}">Salidas</a></li>
+            <li><a href="{{ url_for('reportes') }}">Reportes</a></li>
+            <li><a href="{{ url_for('pgm') }}">PGM</a></li>
+            <li><a href="{{ url_for('inventory') }}">Inventory</a></li> <!-- Opción de Inventory -->
+        </ul>
+        <!-- Botón de Cerrar Sesión -->
+        <div class="mt-auto p-3">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger btn-block">Cerrar sesión</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1>Bienvenido a Intest</h1>
+        <p>Explora las funciones disponibles en el menú lateral.</p>
+    </div>
+
+    <!-- Enlace a los scripts de Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

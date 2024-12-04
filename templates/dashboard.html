@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Racks - Inventec Planta 2</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .rack-btn {
+      width: 100%;
+      height: 50px;
+      font-size: 1rem;
+      border-radius: 8px;
+      margin: 5px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .rack-btn:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    .line-title {
+      background-color: #007bff;
+      color: white;
+      padding: 8px;
+      text-align: center;
+      font-size: 1.3rem;
+      border-radius: 8px;
+    }
+
+    .rack-container {
+      margin-top: 30px;
+    }
+
+    .btn-action {
+      margin-left: 10px;
+      font-size: 1.1rem;
+      padding: 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .btn-action:hover {
+      transform: scale(1.05);
+    }
+
+    .rack-row {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+    }
+
+    .container {
+      max-width: 100%;
+    }
+
+    .main-title {
+      background-color: #343a40;
+      color: white;
+      font-size: 2rem;
+      padding: 15px;
+      text-align: center;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-4">
+    <div class="main-title mb-4">
+      <h1>Gestión de Racks - Inventec Planta 2</h1>
+    </div>
+
+    <div class="btn-group d-flex justify-content-center">
+      <button class="btn btn-action btn-primary" onclick="agregarRack()">Agregar Rack</button>
+      <button class="btn btn-action btn-warning" onclick="eliminarRack()">Eliminar Rack</button>
+      <a href="{{ url_for('index') }}" class="btn btn-action btn-danger">Regresar al Inicio</a>
+    </div>
+
+    <div class="rack-container">
+      <div id="rack-container">
+        <div class="line-title">Línea A</div>
+        <div class="rack-row" id="linea-A"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="rackModal" tabindex="-1" aria-labelledby="rackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="rackModalLabel">Detalles del Rack</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <button class="btn btn-success" onclick="agregarComponente()">Agregar Componente</button>
+          <table class="table table-bordered mt-3">
+            <thead>
+              <tr>
+                <th>Componente</th>
+                <th>CT de componente</th>
+                <th>Número de parte</th>
+                <th>Cantidad</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="rackDetailsTable">
+              <!-- Contenido dinámico generado desde JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+  <script>
+    const componentes = [
+      { componente: "TESTER PC #1", ct: "CT-001", numeroParte: "NP-001", cantidad: 1 },
+      { componente: "TESTER PC #2", ct: "CT-002", numeroParte: "NP-002", cantidad: 1 }
+    ];
+
+    window.onload = function() {
+      for (let i = 1; i <= 12; i++) {
+        agregarRackAlCargar(i);
+      }
+    };
+
+    function agregarRackAlCargar(rackNumber) {
+      const currentLine = `linea-${String.fromCharCode(65 + Math.floor((rackNumber - 1) / 12))}`;
+      const lineContent = document.getElementById(currentLine);
+      crearRack(rackNumber, lineContent);
+    }
+
+    function crearRack(rackNumber, lineContent) {
+      const rackBtn = document.createElement('button');
+      rackBtn.classList.add('btn', 'btn-primary', 'rack-btn');
+      rackBtn.id = `rack-${rackNumber}`;
+      rackBtn.textContent = `Rack ${rackNumber}`;
+      rackBtn.onclick = function () { mostrarDetallesRack(rackNumber); };
+
+      const rackDiv = document.createElement('div');
+      rackDiv.classList.add('col-md-1');
+      rackDiv.id = `rack-div-${rackNumber}`;
+      rackDiv.appendChild(rackBtn);
+
+      lineContent.appendChild(rackDiv);
+    }
+
+    function mostrarDetallesRack(rackNumber) {
+      const rackDetailsTable = document.getElementById('rackDetailsTable');
+      rackDetailsTable.innerHTML = '';
+
+      componentes.forEach((comp, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${comp.componente}</td>
+          <td>${comp.ct}</td>
+          <td>${comp.numeroParte}</td>
+          <td>${comp.cantidad}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" onclick="editarComponente(${index})">Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="eliminarComponente(${index})">Eliminar</button>
+          </td>
+        `;
+        rackDetailsTable.appendChild(row);
+      });
+
+      const modal = new bootstrap.Modal(document.getElementById('rackModal'));
+      modal.show();
+    }
+
+    function editarComponente(index) {
+      const nuevoComponente = prompt(`Editar componente (${componentes[index].componente}):`, componentes[index].componente);
+      const nuevoCT = prompt(`Editar CT de componente (${componentes[index].ct}):`, componentes[index].ct);
+      const nuevoNumeroParte = prompt(`Editar número de parte (${componentes[index].numeroParte}):`, componentes[index].numeroParte);
+      const nuevaCantidad = prompt(`Editar cantidad (${componentes[index].cantidad}):`, componentes[index].cantidad);
+
+      if (nuevoComponente && nuevoCT && nuevoNumeroParte && nuevaCantidad) {
+        componentes[index].componente = nuevoComponente;
+        componentes[index].ct = nuevoCT;
+        componentes[index].numeroParte = nuevoNumeroParte;
+        componentes[index].cantidad = parseInt(nuevaCantidad, 10);
+        mostrarDetallesRack(); // Refresca la tabla
+      }
+    }
+
+    function eliminarComponente(index) {
+      if (confirm(`¿Seguro que quieres eliminar el componente ${componentes[index].componente}?`)) {
+        componentes.splice(index, 1);
+        mostrarDetallesRack(); // Refresca la tabla
+      }
+    }
+
+    // Función para agregar un componente
+    function agregarComponente() {
+      const nuevoComponente = prompt("Ingrese el nombre del componente:");
+      const nuevoCT = prompt("Ingrese el CT del componente:");
+      const nuevoNumeroParte = prompt("Ingrese el número de parte:");
+      const nuevaCantidad = prompt("Ingrese la cantidad:");
+
+      if (nuevoComponente && nuevoCT && nuevoNumeroParte && nuevaCantidad) {
+        componentes.push({
+          componente: nuevoComponente,
+          ct: nuevoCT,
+          numeroParte: nuevoNumeroParte,
+          cantidad: parseInt(nuevaCantidad, 10)
+        });
+        mostrarDetallesRack(); // Refresca la tabla
+      }
+    }
+  </script>
+</body>
+</html>

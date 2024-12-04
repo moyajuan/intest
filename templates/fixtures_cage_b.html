@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage Fixtures Cage B</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <span class="navbar-text" style="font-size: 2rem; font-weight: bold; color: black;">
+                Bienvenido, {{ session['user'] }}
+            </span>
+            <a href="{{ url_for('index') }}" class="btn btn-light ml-auto">Inicio</a>
+        </div>
+    </nav>
+
+    <div class="sidebar">
+        <ul>
+            <li><a href="{{ url_for('inventory') }}">Inventory</a></li>
+            <li><a href="{{ url_for('spare_parts_inventory') }}">Spare Parts Inventory</a></li>
+            <li><a href="{{ url_for('storage_room') }}">Storage Room</a></li>
+            <li><a href="{{ url_for('tools') }}">Tools</a></li>
+        </ul>
+        <div class="mt-auto p-3">
+            <a href="{{ url_for('logout') }}" class="btn btn-danger btn-block">Cerrar sesión</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1 style="font-size: 2rem; font-weight: bold;">Storage Fixtures Cage B</h1>
+        <p>Esta es la página específica para la administración del almacenamiento en Cage B.</p>
+        <!-- Aquí se puede incluir contenido adicional como tablas, gráficos o formularios -->
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

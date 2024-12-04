@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes de Auditoría</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand {
+            font-size: 2rem;
+            text-align: center;
+            width: 100%;
+        }
+        .btn-custom-yellow {
+            background-color: #ffc107;
+            color: white;
+            border: none;
+        }
+        .btn-custom-yellow:hover {
+            background-color: #e0a800;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Reportes de Auditoría PGM</a>
+            <div class="d-flex">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary me-2">Inicio</a>
+                <!-- Botón para abrir el modal de agregar reporte -->
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReportModal">Agregar Reporte</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Modal para agregar reporte -->
+    <div class="modal fade" id="addReportModal" tabindex="-1" aria-labelledby="addReportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addReportModalLabel">Agregar Reporte de Auditoría</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ url_for('pgm_audit_reports') }}" method="POST">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="no_orden" class="form-label">No. Orden</label>
+                            <input type="text" class="form-control" id="no_orden" name="no_orden" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="equipo" class="form-label">Equipo</label>
+                            <input type="text" class="form-control" id="equipo" name="equipo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fecha" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="fecha" name="fecha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reloj" class="form-label"># Reloj</label>
+                            <input type="text" class="form-control" id="reloj" name="reloj" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="empleado" class="form-label">Empleado</label>
+                            <input type="text" class="form-control" id="empleado" name="empleado" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="imagen_empleado" class="form-label">Imagen Empleado</label>
+                            <input type="text" class="form-control" id="imagen_empleado" name="imagen_empleado" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Reporte</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <h2>Reportes de Auditoría</h2>
+
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>No. Orden</th>
+                    <th>Equipo</th>
+                    <th>Fecha</th>
+                    <th># Reloj</th>
+                    <th>Empleado</th>
+                    <th>Imagen Empleado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if reportes %}
+                    {% for id, reporte in reportes.items() %}
+                        <tr>
+                            <td>{{ reporte['no_orden'] }}</td>
+                            <td>{{ reporte['equipo'] }}</td>
+                            <td>{{ reporte['fecha'] }}</td>
+                            <td>{{ reporte['reloj'] }}</td>
+                            <td>{{ reporte['empleado'] }}</td>
+                            <td><img src="{{ reporte['imagen_empleado'] }}" alt="Imagen de empleado" width="50"></td>
+                            <td class="text-center">
+                                <!-- Mostrar el botón de "Ver Reporte" -->
+                                <a href="{{ url_for('get_report', report_id=id) }}" class="btn btn-warning btn-sm">Ver Reporte</a>
+                                <!-- Mostrar el botón de "Eliminar" -->
+                                <a href="{{ url_for('delete_report', report_id=id) }}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar este reporte?')">Eliminar</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center">No hay reportes registrados.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
