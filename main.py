@@ -1,5 +1,6 @@
 # Importar librerías necesarias
 import os
+import json
 import firebase_admin
 import matplotlib.pyplot as plt
 import io
@@ -7,18 +8,54 @@ import base64
 import numpy as np
 from firebase_admin import credentials, db
 from flask import Flask, render_template, redirect, url_for, request, session
+from dotenv import load_dotenv  # Importar para cargar variables de entorno
 from data.database import get_entries, insert_entry, update_entry, delete_entry, get_entries_by_id, create_database, insert_salida, get_salidas, delete_salida_from_db
 
-# Inicialización de Firebase
-cred = credentials.Certificate('serviceAccountKey.json')
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://practica28-a1a4e-default-rtdb.firebaseio.com/'
-})
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
+
+# Obtener las credenciales desde el archivo .env
+firebase_credentials = os.getenv("FIREBASE_CREDENTIALS")
+
+# Verificar si las credenciales están disponibles
+if not firebase_credentials:
+    raise ValueError("No se encontraron las credenciales de Firebase en el archivo .env.")
+
+# Convertir las credenciales en formato JSON
+try:
+    cred_dict = json.loads(firebase_credentials)
+except json.JSONDecodeError as e:
+    raise ValueError("Las credenciales de Firebase no son un JSON válido.") from e
+
+# Inicializar Firebase si no está ya inicializado
+if not firebase_admin._apps:
+    cred = credentials.Certificate(cred_dict)
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://practica28-a1a4e-default-rtdb.firebaseio.com/'
+    })
+
+print("Conexión a Firebase exitosa!")
+
+# Ejemplo de cómo interactuar con Firebase
+def get_entries_from_firebase():
+    try:
+        ref = db.reference('/entradas')
+        return ref.get()
+    except Exception as e:
+        print("Error al obtener datos de Firebase:", e)
+        return None
+
+# Prueba de conexión
+entries = get_entries_from_firebase()
+if entries:
+    print("Datos obtenidos:", entries)
+else:
+    print("No se encontraron datos o hubo un error.")
 
 # Crear la aplicación Flask
 app = Flask(__name__)
 
-# Configuración para manejar sesiones
+# Configuración para manejar sesiones   
 app.secret_key = os.urandom(24)
 
 # Crear la base de datos si no existe
@@ -54,6 +91,8 @@ def get_mantenimientos():
 
 def get_reportes():
     return []  # Lista vacía temporal
+
+
 
 # Función para insertar entradas en Firebase
 def insert_entry_to_firebase(componente, num_parte, ubicacion_actual, Id_usuario, cantidad_entrada):
